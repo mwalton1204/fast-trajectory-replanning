@@ -1,14 +1,14 @@
 import maze
+import visualizer
+import os
 
 if __name__ == "__main__":
-    grid = maze.Grid()
-    maze.generate_maze(grid)
+    # Generate 30 grids if non exist
+    if not os.path.exists("grids/grid_0.pkl"):
+        maze.save_grids()
     
-    total_cells = grid.rows * grid.cols
-    blocked_count = grid.blocked.sum()
-    unblocked_count = total_cells - blocked_count
+    # Load the first grid
+    grid, start, goal = maze.load_grid(0)
     
-    print(f"Total cells:    {total_cells}")
-    print(f"Blocked cells:  {blocked_count}")
-    print(f"Unblocked cells:{unblocked_count}")
-    print(f"Block rate:     {blocked_count/total_cells:.1%}")
+    # Visualize the loaded grid
+    visualizer.visualize_grid(grid, start = start, goal = goal)

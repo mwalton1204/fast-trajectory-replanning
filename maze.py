@@ -1,5 +1,7 @@
 import numpy as np
 import random
+import pickle
+import os
 
 class Grid:
     def __init__(self, rows = 51, cols = 51):
@@ -76,3 +78,27 @@ def generate_maze(grid):
         else:
             grid.blocked[r, c] = 0
             stack.append((r, c))
+
+def save_grids(n = 30, folder = "grids"):
+    os.makedirs(folder, exist_ok = True)
+    
+    # Generate n grids with unique start and goal locations
+    for i in range(n):
+        grid = Grid()
+        generate_maze(grid)
+        
+        unblocked = [(r,c) for r in range(grid.rows) for c in range(grid.cols) if not grid.blocked[r, c]]
+        start, goal = random.sample(unblocked, 2)
+        
+        # Create a dictionary with grid data and save to grids folder
+        data = {"grid": grid, "start": start, "goal": goal}
+        with open(f"{folder}/grid_{i}.pkl", "wb") as f:
+            pickle.dump(data, f)
+            
+        print(f"Saved grid {i+1}/30")
+        
+def load_grid(index, folder = "grids"):
+    # Load and return specified grid data
+    with open(f"{folder}/grid_{index}.pkl", "rb") as f:
+        data = pickle.load(f)
+    return data["grid"], data["start"], data["goal"]
