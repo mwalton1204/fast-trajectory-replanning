@@ -1,7 +1,13 @@
 # Ignore everything
 *
 
+# Unignore specific directories
+!grids/
+!grids/**
+
 # Unignore specific file types
 !*.py
 !.gitignore
+
+# Unignore specific files
 !README.md
