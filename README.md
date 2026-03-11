@@ -14,15 +14,16 @@ Implementation of Repeated A* algorithms for navigating an agent through an unkn
 fast-trajectory-replanning/
     maze.py        # Grid class and maze generation
     main.py        # Entry point
-    grids/         # Saved gridworlds (coming soon)
+    visualizer.py  # Visualize mazes
+    grids/         # Saved gridworlds
 ```
 
 ## Requirements
 ```bash
-pip install numpy
+pip install numpy pygame 
 ```
 
 ## Usage
 ```bash
-python3 main.py    # Generate and visualize a maze
+python3 main.py
 ```
