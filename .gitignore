@@ -1,0 +1,7 @@
+# Ignore everything
+*
+
+# Unignore specific file types
+!*.py
+!.gitignore
+!README.md
