@@ -1,5 +1,6 @@
 import maze
 import visualizer
+import astar
 import os
 
 if __name__ == "__main__":
@@ -9,6 +10,15 @@ if __name__ == "__main__":
     
     # Load the first grid
     grid, start, goal = maze.load_grid(0)
+    
+    result = astar.repeated_forward_astar(grid, start, goal)
+    
+    if result is None:
+        print("No path found!")
+    else:
+        print(f"Path found! length: {len(result)} steps")
+        print(f"Start: {start}")
+        print (f"Goal: {goal}")
     
     # Visualize the loaded grid
     visualizer.visualize_grid(grid, start = start, goal = goal)
