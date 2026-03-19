@@ -21,4 +21,4 @@ if __name__ == "__main__":
         print (f"Goal: {goal}")
     
     # Visualize the loaded grid
-    visualizer.visualize_grid(grid, start = start, goal = goal, path = result)
+    visualizer.visualize_steps(grid, start = start, goal = goal, steps = result)
