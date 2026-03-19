@@ -9,14 +9,14 @@ if __name__ == "__main__":
         maze.save_grids()
     
     # Load the first grid
-    grid, start, goal = maze.load_grid(0)
+    grid, start, goal = maze.load_grid(1)
     
     result = astar.repeated_forward_astar(grid, start, goal)
     
     if result is None:
         print("No path found!")
     else:
-        print(f"Path found! length: {len(result)} steps")
+        print(f"Path found! length: {len(result)-1} steps")
         print(f"Start: {start}")
         print (f"Goal: {goal}")
     

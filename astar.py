@@ -62,6 +62,7 @@ def repeated_forward_astar(grid, start, goal):
     compute_h(grid, h_array, goal)
     counter = 0
     current = start
+    solution = [start]
     observe_neighbors(grid, known_blocked, current)
     
     while current != goal:
@@ -96,6 +97,7 @@ def repeated_forward_astar(grid, start, goal):
             if known_blocked[next_cell]:
                 break
             current = next_cell
+            solution.append(current)
             observe_neighbors(grid, known_blocked, current)
             if current == goal:
-                return path
+                return solution
