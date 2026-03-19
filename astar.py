@@ -1,14 +1,16 @@
 import numpy as np
-import heapq
+import heapq # 
 
-def compute_path(grid, known_blocked, open_list, g, h, search, parent, counter, start, goal):
+def compute_path(grid, known_blocked, open_list, g, h, search, parent, counter, start, goal, tie_breaker=None):
     while open_list:
         
         # Compare goal's current g-value to smallest f-value in open_list
         if g[goal] <= open_list[0][0]:
             break
         
-        f, (r, c) = heapq.heappop(open_list)
+        heap_entry = heapq.heappop(open_list)
+        f = heap_entry[0]
+        r, c = heap_entry[-1]
         
         for nr, nc in grid.get_neighbors(r, c):
             if known_blocked[nr, nc]:
@@ -21,7 +23,13 @@ def compute_path(grid, known_blocked, open_list, g, h, search, parent, counter, 
             if g[nr, nc] > g[r, c] + 1:
                 g[nr, nc] = g[r, c] + 1
                 parent[(nr, nc)] = (r, c)
-                heapq.heappush(open_list, (g[nr, nc] + h[nr, nc], (nr, nc)))
+                f = g[nr, nc] + h[nr, nc]
+                if tie_breaker == "large_g":
+                    heapq.heappush(open_list, (f, -g[nr, nc], (nr, nc)))
+                elif tie_breaker == "small_g":
+                    heapq.heappush(open_list, (f, g[nr, nc], (nr, nc)))
+                else:
+                    heapq.heappush(open_list, (f, (nr, nc)))
                 
 def compute_h(grid, h_array, goal):
     for r in range(grid.rows):
@@ -50,7 +58,7 @@ def reconstruct_path(parent, start, goal):
     
     return path
 
-def repeated_forward_astar(grid, start, goal):
+def repeated_forward_astar(grid, start, goal, tie_breaker=None):
     rows = grid.rows
     cols = grid.cols
     
@@ -84,10 +92,13 @@ def repeated_forward_astar(grid, start, goal):
         
         # Initialize and push start to open list
         open_list = []
-        heapq.heappush(open_list, (h_array[current], current))
+        if tie_breaker != None:
+            heapq.heappush(open_list, (h_array[current], 0, current))
+        else:
+            heapq.heappush(open_list, (h_array[current], current))
         
         # Run A*
-        compute_path(grid, known_blocked, open_list, g_array, h_array, search, parent, counter, current, goal)
+        compute_path(grid, known_blocked, open_list, g_array, h_array, search, parent, counter, current, goal, tie_breaker)
                 
         # If unreachable goal
         if g_array[goal] == np.inf:
@@ -107,3 +118,9 @@ def repeated_forward_astar(grid, start, goal):
             if current == goal:
                 steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:], "observed": observed.copy()})
                 return steps
+            
+def forward_large_g(grid, start, goal):
+    return repeated_forward_astar(grid, start, goal, tie_breaker = "large_g")
+
+def forward_small_g(grid, start, goal):
+    return repeated_forward_astar(grid, start, goal, tie_breaker = "small_g")

@@ -19,6 +19,15 @@ if __name__ == "__main__":
         print(f"Path found! length: {len(result)-1} steps")
         print(f"Start: {start}")
         print (f"Goal: {goal}")
+        
+    steps_large = astar.forward_large_g(grid, start, goal)
+    steps_small = astar.forward_small_g(grid, start, goal)
+
+    if steps_large:
+       print(f"Large-g steps: {len(steps_large)}")
+    if steps_small:
+        print(f"Small-g steps: {len(steps_small)}")
     
     # Visualize the loaded grid
-    visualizer.visualize_steps(grid, start = start, goal = goal, steps = result)
+    visualizer.visualize_steps(grid, start = start, goal = goal, steps = steps_large)
+    visualizer.visualize_steps(grid, start = start, goal = goal, steps = steps_small)
