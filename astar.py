@@ -54,22 +54,24 @@ def repeated_forward_astar(grid, start, goal):
     # Initialize arrays to track necessary values for each cell
     g_array = np.full((rows, cols), np.inf)
     h_array = np.zeros((rows, cols))
-    # Search tracks which search last touched each cell, avoids resetting g-values between searches
     search = np.zeros((rows, cols), dtype = int)
     parent = {}
     known_blocked = np.zeros((rows, cols), dtype = bool)
     
+     # Agent iknowledge after each move
+    steps = []
+    
     compute_h(grid, h_array, goal)
     counter = 0
     current = start
-    solution = [start]
+    solution = [start] # Full trajectory of the search
     observe_neighbors(grid, known_blocked, current)
+    
+    steps.append({"agent": current, "known_blocked": known_blocked.copy(), "current_path": []})
     
     while current != goal:
         counter += 1
-        
-        print(f"Search #{counter}, current={current}, goal={goal}")
-        
+                
         # Initialize start and goal for this search
         g_array[current] = 0
         search[current] = counter
@@ -82,9 +84,7 @@ def repeated_forward_astar(grid, start, goal):
         
         # Run A*
         compute_path(grid, known_blocked, open_list, g_array, h_array, search, parent, counter, current, goal)
-        
-        print(f"g_array[goal] = {g_array[goal]}")
-        
+                
         # If unreachable goal
         if g_array[goal] == np.inf:
             return None
@@ -99,5 +99,7 @@ def repeated_forward_astar(grid, start, goal):
             current = next_cell
             solution.append(current)
             observe_neighbors(grid, known_blocked, current)
+            steps.append({"agent": current, "known_blocked": known_blocked.copy(), "current_path": path[:]})
             if current == goal:
-                return solution
+                steps.append({"agent": current, "known_blocked": known_blocked.copy(), "current_path": []})
+                return steps
