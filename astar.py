@@ -3,11 +3,12 @@ import heapq
 
 def compute_path(grid, known_blocked, open_list, g, h, search, parent, counter, start, goal):
     while open_list:
-        f, (r, c) = heapq.heappop(open_list)
         
         # Compare goal's current g-value to smallest f-value in open_list
-        if not open_list or g[goal] <= open_list[0][0]:
+        if g[goal] <= open_list[0][0]:
             break
+        
+        f, (r, c) = heapq.heappop(open_list)
         
         for nr, nc in grid.get_neighbors(r, c):
             if known_blocked[nr, nc]:
@@ -66,6 +67,8 @@ def repeated_forward_astar(grid, start, goal):
     while current != goal:
         counter += 1
         
+        print(f"Search #{counter}, current={current}, goal={goal}")
+        
         # Initialize start and goal for this search
         g_array[current] = 0
         search[current] = counter
@@ -78,6 +81,8 @@ def repeated_forward_astar(grid, start, goal):
         
         # Run A*
         compute_path(grid, known_blocked, open_list, g_array, h_array, search, parent, counter, current, goal)
+        
+        print(f"g_array[goal] = {g_array[goal]}")
         
         # If unreachable goal
         if g_array[goal] == np.inf:
