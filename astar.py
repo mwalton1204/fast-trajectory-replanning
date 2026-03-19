@@ -2,6 +2,7 @@ import numpy as np
 import heapq # 
 
 def compute_path(grid, known_blocked, open_list, g, h, search, parent, counter, start, goal, tie_breaker=None):
+    expansions = 0
     while open_list:
         
         # Compare goal's current g-value to smallest f-value in open_list
@@ -11,6 +12,7 @@ def compute_path(grid, known_blocked, open_list, g, h, search, parent, counter, 
         heap_entry = heapq.heappop(open_list)
         f = heap_entry[0]
         r, c = heap_entry[-1]
+        expansions += 1
         
         for nr, nc in grid.get_neighbors(r, c):
             if known_blocked[nr, nc]:
@@ -30,6 +32,8 @@ def compute_path(grid, known_blocked, open_list, g, h, search, parent, counter, 
                     heapq.heappush(open_list, (f, g[nr, nc], (nr, nc)))
                 else:
                     heapq.heappush(open_list, (f, (nr, nc)))
+                    
+    return expansions
                 
 def compute_h(grid, h_array, goal):
     for r in range(grid.rows):
@@ -72,6 +76,7 @@ def repeated_forward_astar(grid, start, goal, tie_breaker=None):
     
      # Agent knowledge after each move
     steps = []
+    total_expansions = 0
     
     compute_h(grid, h_array, goal)
     counter = 0
@@ -98,7 +103,7 @@ def repeated_forward_astar(grid, start, goal, tie_breaker=None):
             heapq.heappush(open_list, (h_array[current], current))
         
         # Run A*
-        compute_path(grid, known_blocked, open_list, g_array, h_array, search, parent, counter, current, goal, tie_breaker)
+        total_expansions += compute_path(grid, known_blocked, open_list, g_array, h_array, search, parent, counter, current, goal, tie_breaker)
                 
         # If unreachable goal
         if g_array[goal] == np.inf:
@@ -117,7 +122,7 @@ def repeated_forward_astar(grid, start, goal, tie_breaker=None):
             steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:], "observed": observed.copy()})
             if current == goal:
                 steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:], "observed": observed.copy()})
-                return steps
+                return steps, total_expansions
             
 def forward_large_g(grid, start, goal):
     return repeated_forward_astar(grid, start, goal, tie_breaker = "large_g")
