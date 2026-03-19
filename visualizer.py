@@ -1,6 +1,6 @@
 import pygame
 
-def visualize_grid(grid, start=None, goal=None):
+def visualize_grid(grid, start=None, goal=None, path=None):
     CELL_SIZE = 17  # pixels per cell — change this to zoom in/out!
     WIDTH = grid.cols * CELL_SIZE
     HEIGHT = grid.rows * CELL_SIZE
@@ -22,6 +22,13 @@ def visualize_grid(grid, start=None, goal=None):
         pygame.draw.rect(screen, (0, 200, 0), (start[1]*CELL_SIZE, start[0]*CELL_SIZE, CELL_SIZE, CELL_SIZE))
     if goal:
         pygame.draw.rect(screen, (200, 0, 0), (goal[1]*CELL_SIZE, goal[0]*CELL_SIZE, CELL_SIZE, CELL_SIZE))
+
+    # Draw path if one exists
+    if path:
+        for (r, c) in path:
+            if (r, c) != start and (r, c) != goal:
+                pygame.draw.rect(screen, (0, 0, 255),
+                    (c*CELL_SIZE, r*CELL_SIZE, CELL_SIZE, CELL_SIZE))
 
     pygame.display.flip()
 
