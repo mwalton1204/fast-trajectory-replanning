@@ -64,10 +64,10 @@ def repeated_forward_astar(grid, start, goal):
     compute_h(grid, h_array, goal)
     counter = 0
     current = start
-    solution = [start] # Full trajectory of the search
+    visited = [start] # Full trajectory of the search
     observe_neighbors(grid, known_blocked, current)
     
-    steps.append({"agent": current, "known_blocked": known_blocked.copy(), "current_path": []})
+    steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:]})
     
     while current != goal:
         counter += 1
@@ -97,9 +97,9 @@ def repeated_forward_astar(grid, start, goal):
             if known_blocked[next_cell]:
                 break
             current = next_cell
-            solution.append(current)
+            visited.append(current)
             observe_neighbors(grid, known_blocked, current)
-            steps.append({"agent": current, "known_blocked": known_blocked.copy(), "current_path": path[:]})
+            steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:]})
             if current == goal:
-                steps.append({"agent": current, "known_blocked": known_blocked.copy(), "current_path": []})
+                steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:]})
                 return steps

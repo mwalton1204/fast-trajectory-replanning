@@ -9,7 +9,7 @@ if __name__ == "__main__":
         maze.save_grids()
     
     # Load the first grid
-    grid, start, goal = maze.load_grid(1)
+    grid, start, goal = maze.load_grid(0)
     
     result = astar.repeated_forward_astar(grid, start, goal)
     
