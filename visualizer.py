@@ -40,7 +40,7 @@ def visualize_grid(grid, start=None, goal=None, path=None):
                 return
             
 def visualize_steps(grid, start=None, goal=None, steps=None):
-    CELL_SIZE = 18  # pixels per cell — change this to zoom in/out!
+    CELL_SIZE = 15  # pixels per cell — change this to zoom in/out!
     WIDTH = grid.cols * CELL_SIZE
     HEIGHT = grid.rows * CELL_SIZE
     
@@ -50,6 +50,8 @@ def visualize_steps(grid, start=None, goal=None, steps=None):
     
     current_step = 0
     stepping = False
+    show_maze = False
+    
     clock = pygame.time.Clock()
     
     while True:
@@ -60,12 +62,14 @@ def visualize_steps(grid, start=None, goal=None, steps=None):
                 pygame.quit()
                 return
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RIGHT:
+                if event.key == pygame.K_RIGHT: # Right arrow step forward
                     current_step = min(current_step + 1, len(steps) - 1)
-                if event.key == pygame.K_LEFT:
+                if event.key == pygame.K_LEFT: # Left arrow step back
                     current_step = max(current_step - 1, 0)
-                if event.key == pygame.K_SPACE:
+                if event.key == pygame.K_SPACE: # Space start/stop stepping
                     stepping = not stepping
+                if event.key == pygame.K_t: # T show full maze
+                    show_maze = not show_maze
         
         if stepping:
             current_step = min(current_step + 1, len(steps) - 1)
@@ -77,7 +81,9 @@ def visualize_steps(grid, start=None, goal=None, steps=None):
         # Draw each cell
         for r in range(grid.rows):
             for c in range(grid.cols):
-                if step["known_blocked"][r, c]:
+                if show_maze:
+                    color = (0, 0, 0) if grid.blocked[r, c] else (255, 255, 255)
+                elif step["known_blocked"][r, c]:
                     color = (0, 0, 0)
                 elif not step["observed"][r, c]: # Fog of war
                     color = (200, 200, 200)

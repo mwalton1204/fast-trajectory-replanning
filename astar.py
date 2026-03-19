@@ -62,7 +62,7 @@ def repeated_forward_astar(grid, start, goal):
     known_blocked = np.zeros((rows, cols), dtype = bool) # Cells agent knows are blocked
     observed = np.zeros((rows, cols), dtype = bool) # Cells agent has seen
     
-     # Agent iknowledge after each move
+     # Agent knowledge after each move
     steps = []
     
     compute_h(grid, h_array, goal)
