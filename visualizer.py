@@ -40,7 +40,7 @@ def visualize_grid(grid, start=None, goal=None, path=None):
                 return
             
 def visualize_steps(grid, start=None, goal=None, steps=None):
-    CELL_SIZE = 17  # pixels per cell — change this to zoom in/out!
+    CELL_SIZE = 18  # pixels per cell — change this to zoom in/out!
     WIDTH = grid.cols * CELL_SIZE
     HEIGHT = grid.rows * CELL_SIZE
     
@@ -77,10 +77,15 @@ def visualize_steps(grid, start=None, goal=None, steps=None):
         # Draw each cell
         for r in range(grid.rows):
             for c in range(grid.cols):
-                color = (0, 0, 0) if step["known_blocked"][r, c] else (255, 255, 255)
+                if step["known_blocked"][r, c]:
+                    color = (0, 0, 0)
+                elif not step["observed"][r, c]: # Fog of war
+                    color = (200, 200, 200)
+                else:
+                    color = (255, 255, 255)
                 pygame.draw.rect(screen, color, (c*CELL_SIZE, r*CELL_SIZE, CELL_SIZE, CELL_SIZE))
-                # Draw grid border
-                pygame.draw.rect(screen, (200, 200, 200), (c*CELL_SIZE, r*CELL_SIZE, CELL_SIZE, CELL_SIZE), 1)
+                # Draw grid
+                # pygame.draw.rect(screen, (100, 100, 100), (c*CELL_SIZE, r*CELL_SIZE, CELL_SIZE, CELL_SIZE), 1)
                 
             # Draw current path
             for (r, c) in step["visited"]:

@@ -29,8 +29,11 @@ def compute_h(grid, h_array, goal):
             # Calculate manhattan distance (|x1 - x2| + |y1 - y2|) and assign as h-value for that cell
             h_array[r, c] = abs(r - goal[0]) + abs(c - goal[1])
 
-def observe_neighbors(grid, known_blocked, current):
+def observe_neighbors(grid, known_blocked, current, observed):
+    observed[current[0], current[1]] = True # Mark current as seen
+    
     for nr, nc in grid.get_neighbors(current[0], current[1]):
+        observed[nr, nc] = True # Mark neighbors as seen
         if grid.blocked[nr, nc]:
             known_blocked[nr, nc] = True
             
@@ -52,11 +55,12 @@ def repeated_forward_astar(grid, start, goal):
     cols = grid.cols
     
     # Initialize arrays to track necessary values for each cell
-    g_array = np.full((rows, cols), np.inf)
-    h_array = np.zeros((rows, cols))
-    search = np.zeros((rows, cols), dtype = int)
+    g_array = np.full((rows, cols), np.inf) # Each cell's g-value
+    h_array = np.zeros((rows, cols)) # Each cell's h-value
+    search = np.zeros((rows, cols), dtype = int) # Number of re-plans
     parent = {}
-    known_blocked = np.zeros((rows, cols), dtype = bool)
+    known_blocked = np.zeros((rows, cols), dtype = bool) # Cells agent knows are blocked
+    observed = np.zeros((rows, cols), dtype = bool) # Cells agent has seen
     
      # Agent iknowledge after each move
     steps = []
@@ -65,9 +69,9 @@ def repeated_forward_astar(grid, start, goal):
     counter = 0
     current = start
     visited = [start] # Full trajectory of the search
-    observe_neighbors(grid, known_blocked, current)
+    observe_neighbors(grid, known_blocked, current, observed)
     
-    steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:]})
+    steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:], "observed": observed.copy()})
     
     while current != goal:
         counter += 1
@@ -98,8 +102,8 @@ def repeated_forward_astar(grid, start, goal):
                 break
             current = next_cell
             visited.append(current)
-            observe_neighbors(grid, known_blocked, current)
-            steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:]})
+            observe_neighbors(grid, known_blocked, current, observed)
+            steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:], "observed": observed.copy()})
             if current == goal:
-                steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:]})
+                steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:], "observed": observed.copy()})
                 return steps
