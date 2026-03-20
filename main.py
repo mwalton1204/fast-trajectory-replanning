@@ -12,12 +12,11 @@ if __name__ == "__main__":
     grid, start, goal = maze.load_grid(0)
     
     steps_fwd, exp_fwd = astar.forward_large_g(grid, start, goal)
-    steps_bwd, exp_bwd = astar.backward_large_g(grid, start, goal)
-    
-    if steps_fwd:
-        print(f"Forward Large-g: {len(steps_fwd)} steps, {exp_fwd} expansions")
-    if steps_bwd:
-        print(f"Backward Large-g: {len(steps_bwd)} steps, {exp_bwd} expansions")
+    steps_adp, exp_adp = astar.adaptive_large_g(grid, start, goal)
+
+    print(f"\nExpansion comparison:")
+    print(f"Forward:  {exp_fwd}")
+    print(f"Adaptive: {exp_adp}")
     
     visualizer.visualize_steps(grid, start=start, goal=goal, steps=steps_fwd)
-    visualizer.visualize_steps(grid, start=start, goal=goal, steps=steps_bwd)
+    visualizer.visualize_steps(grid, start=start, goal=goal, steps=steps_adp)

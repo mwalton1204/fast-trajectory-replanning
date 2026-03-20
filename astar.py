@@ -195,6 +195,70 @@ def repeated_backward_astar(grid, start, goal, tie_breaker=None):
             if current == goal:
                 return steps, total_expansions
             
+def adaptive_astar(grid, start, goal, tie_breaker=None):
+    rows = grid.rows
+    cols = grid.cols
+    
+    # Initializations
+    g_array = np.full((rows, cols), np.inf) # Each cell's g-value (cost to get here from start)
+    h_array = np.zeros((rows, cols)) # Each cell's h-value (cost to reach goal from here)
+    search = np.zeros((rows, cols), dtype = int) # Tracks which search last visited it, avoids resetting g-values between searches
+    parent = {} # Tracks expanded cell's parents for path reconstruction
+    known_blocked = np.zeros((rows, cols), dtype = bool) # Cells that agent knows are blocked
+    observed = np.zeros((rows, cols), dtype = bool) # Cells that agent has seen
+    
+    # Agent knowledge after each move
+    steps = []
+    total_expansions = 0
+    counter = 0
+    current = start
+    visited = [start] # Full trajectory of the search
+    
+    compute_h(grid, h_array, goal) # Calculate inital h-values for each cell
+    observe_neighbors(grid, known_blocked, current, observed) # Observe neighbors from start
+    
+    # Store step data for initial position
+    steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:], "observed": observed.copy()})
+    
+    while current != goal:
+        counter += 1
+                
+        # Initialize start and goal for this search
+        g_array[current] = 0 # Costs 0 to go from start to start
+        search[current] = counter
+        g_array[goal] = np.inf # Cost to go to goal is unknown, set to infinity
+        search[goal] = counter
+        
+        # Initialize and push start to open list
+        open_list = [] # Stores a cell's f-value, tie-breaker (if used), and coordinates
+        if tie_breaker is not None:
+            heapq.heappush(open_list, (h_array[current], 0, current))
+        else:
+            heapq.heappush(open_list, (h_array[current], current))
+        
+        # Compute the path from start to goal
+        expansions, expanded_cells = compute_path(grid, known_blocked, open_list, g_array, h_array, search, parent, counter, current, goal, tie_breaker)
+        total_expansions += expansions
+        
+        # Update h-values using new information
+        update_h(h_array, g_array, expanded_cells, goal)
+                
+        if g_array[goal] == np.inf: # If unreachable goal
+            return None, total_expansions
+        
+        path = reconstruct_path(parent, current, goal) # If goal found, reconstruct path
+        
+        # Make agent traverse path
+        for next_cell in path[1:]:
+            if known_blocked[next_cell]:
+                break
+            current = next_cell
+            visited.append(current)
+            observe_neighbors(grid, known_blocked, current, observed)
+            steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:], "observed": observed.copy()})
+            if current == goal:
+                return steps, total_expansions
+            
 def forward_large_g(grid, start, goal):
     return repeated_forward_astar(grid, start, goal, tie_breaker = "large_g")
 
@@ -206,3 +270,9 @@ def backward_large_g(grid, start, goal):
 
 def backward_small_g(grid, start, goal):
     return repeated_backward_astar(grid, start, goal, tie_breaker = "small_g")
+
+def adaptive_large_g(grid, start, goal):
+    return adaptive_astar(grid, start, goal, tie_breaker = "large_g")
+
+def adaptive_small_g(grid, start, goal):
+    return adaptive_astar(grid, start, goal, tie_breaker = "small_g")
