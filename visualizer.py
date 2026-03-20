@@ -90,8 +90,6 @@ def visualize_steps(grid, start=None, goal=None, steps=None):
                 else:
                     color = (255, 255, 255)
                 pygame.draw.rect(screen, color, (c*CELL_SIZE, r*CELL_SIZE, CELL_SIZE, CELL_SIZE))
-                # Draw grid
-                # pygame.draw.rect(screen, (100, 100, 100), (c*CELL_SIZE, r*CELL_SIZE, CELL_SIZE, CELL_SIZE), 1)
                 
             # Draw current path
             for (r, c) in step["visited"]:
@@ -109,4 +107,4 @@ def visualize_steps(grid, start=None, goal=None, steps=None):
             pygame.draw.rect(screen, (255, 255, 0), (agent[1]*CELL_SIZE, agent[0]*CELL_SIZE, CELL_SIZE, CELL_SIZE))
         
             pygame.display.flip()
-            clock.tick(100)
+            clock.tick(400)
