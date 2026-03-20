@@ -7,6 +7,13 @@ def compute_h(grid, h_array, goal):
             # Calculate manhattan distance (|x1 - x2| + |y1 - y2|) and assign as h-value for that cell
             h_array[r, c] = abs(r - goal[0]) + abs(c - goal[1])
 
+def update_h(h_array, g_array, expanded_cells, goal):
+    g_goal = g_array[goal]
+    for r, c in expanded_cells:
+        new_h = g_goal - g_array[r, c] # Calculate cell's new h-value using new information
+        if new_h > h_array[r, c]: # Only update if new h-value is more accurate than old (lower = less accurate because it ignores blockers)
+            h_array[r, c] = new_h
+
 def observe_neighbors(grid, known_blocked, current, observed):
     observed[current[0], current[1]] = True # Mark current as seen
     
