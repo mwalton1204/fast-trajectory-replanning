@@ -107,10 +107,72 @@ def repeated_forward_astar(grid, start, goal, tie_breaker=None):
                 
         # If unreachable goal
         if g_array[goal] == np.inf:
-            return None
+            return None, total_expansions
         
         # If goal found, reconstruct path
         path = reconstruct_path(parent, current, goal)
+        
+        # Make agent traverse path
+        for next_cell in path[1:]:
+            if known_blocked[next_cell]:
+                break
+            current = next_cell
+            visited.append(current)
+            observe_neighbors(grid, known_blocked, current, observed)
+            steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:], "observed": observed.copy()})
+            if current == goal:
+                steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:], "observed": observed.copy()})
+                return steps, total_expansions
+            
+def repeated_backward_astar(grid, start, goal, tie_breaker=None):
+    rows = grid.rows
+    cols = grid.cols
+    
+    # Initialize arrays to track necessary values for each cell
+    g_array = np.full((rows, cols), np.inf) # Each cell's g-value
+    h_array = np.zeros((rows, cols)) # Each cell's h-value
+    search = np.zeros((rows, cols), dtype = int) # Number of re-plans
+    parent = {}
+    known_blocked = np.zeros((rows, cols), dtype = bool) # Cells agent knows are blocked
+    observed = np.zeros((rows, cols), dtype = bool) # Cells agent has seen
+    
+     # Agent knowledge after each move
+    steps = []
+    total_expansions = 0
+    
+    compute_h(grid, h_array, goal)
+    counter = 0
+    current = start
+    visited = [start] # Full trajectory of the search
+    observe_neighbors(grid, known_blocked, current, observed)
+    
+    steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:], "observed": observed.copy()})
+
+    while current != goal:
+        counter += 1
+        
+        compute_h(grid, h_array, current)
+        
+        g_array[goal] = 0 # Start search @ goal
+        search[goal] = counter
+        g_array[current] = np.inf # End search @ start
+        search[current] = counter
+        
+        open_list = []
+        if tie_breaker is not None:
+            heapq.heappush(open_list, (h_array[goal], 0, goal))
+        else:
+            heapq.heappush(open_list, (h_array[goal], goal))
+        
+        total_expansions += compute_path(grid, known_blocked, open_list, g_array, h_array, search, parent, counter, goal, current, tie_breaker)
+        
+        # If unreachable goal
+        if g_array[current] == np.inf:
+            return None, total_expansions
+        
+        # If goal found, reconstruct path
+        path = reconstruct_path(parent, goal, current)
+        path.reverse()
         
         # Make agent traverse path
         for next_cell in path[1:]:
@@ -129,3 +191,9 @@ def forward_large_g(grid, start, goal):
 
 def forward_small_g(grid, start, goal):
     return repeated_forward_astar(grid, start, goal, tie_breaker = "small_g")
+
+def backward_large_g(grid, start, goal):
+    return repeated_backward_astar(grid, start, goal, tie_breaker = "large_g")
+
+def backward_small_g(grid, start, goal):
+    return repeated_backward_astar(grid, start, goal, tie_breaker = "small_g")
