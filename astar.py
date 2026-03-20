@@ -29,7 +29,9 @@ def reconstruct_path(parent, start, goal): # Retrace via parents
     return path
 
 def compute_path(grid, known_blocked, open_list, g, h, search, parent, counter, start, goal, tie_breaker=None):
-    expansions = 0
+    num_expansions = 0
+    expanded_cells = [] # Tracks which cells are expanded
+    
     while open_list:
         
         # Compare cost to get to goal to the cheapest unexplored option
@@ -38,7 +40,8 @@ def compute_path(grid, known_blocked, open_list, g, h, search, parent, counter, 
         
         heap_entry = heapq.heappop(open_list) # Pop the cheapest (f-value) unexplored cell
         r, c = heap_entry[-1]
-        expansions += 1 # 1 cell popped = 1 expansion
+        num_expansions += 1 # 1 cell popped = 1 expansion
+        expanded_cells.append((r, c)) # Add the popped cell to the list of expanded cells
         
         for nr, nc in grid.get_neighbors(r, c):
             if known_blocked[nr, nc]:
@@ -59,7 +62,7 @@ def compute_path(grid, known_blocked, open_list, g, h, search, parent, counter, 
                 else: # No preference on tie-breaking
                     heapq.heappush(open_list, (f, (nr, nc)))
                     
-    return expansions
+    return num_expansions, expanded_cells
 
 def repeated_forward_astar(grid, start, goal, tie_breaker=None):
     rows = grid.rows
@@ -103,7 +106,8 @@ def repeated_forward_astar(grid, start, goal, tie_breaker=None):
             heapq.heappush(open_list, (h_array[current], current))
         
         # Compute the path from start to goal
-        total_expansions += compute_path(grid, known_blocked, open_list, g_array, h_array, search, parent, counter, current, goal, tie_breaker)
+        expansions, expanded_cells = compute_path(grid, known_blocked, open_list, g_array, h_array, search, parent, counter, current, goal, tie_breaker)
+        total_expansions += expansions
                 
         if g_array[goal] == np.inf: # If unreachable goal
             return None, total_expansions
@@ -164,7 +168,8 @@ def repeated_backward_astar(grid, start, goal, tie_breaker=None):
             heapq.heappush(open_list, (h_array[goal], goal))
         
         # Compute the path from goal to current (pass goal for start and current for goal)
-        total_expansions += compute_path(grid, known_blocked, open_list, g_array, h_array, search, parent, counter, goal, current, tie_breaker)
+        expansions, expanded_cells = compute_path(grid, known_blocked, open_list, g_array, h_array, search, parent, counter, goal, current, tie_breaker)
+        total_expansions += expansions
         
         if g_array[current] == np.inf: # If unreachable goal
             return None, total_expansions
