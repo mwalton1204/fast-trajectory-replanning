@@ -116,10 +116,12 @@ def repeated_forward_astar(grid, start, goal, tie_breaker=None):
         expansions, expanded_cells = compute_path(grid, known_blocked, open_list, g_array, h_array, search, parent, counter, current, goal, tie_breaker)
         total_expansions += expansions
                 
-        if g_array[goal] == np.inf: # If unreachable goal
+        # If unreachable goal
+        if g_array[goal] == np.inf:
             return None, total_expansions
         
-        path = reconstruct_path(parent, current, goal) # If goal found, reconstruct path
+        # If goal found, reconstruct path
+        path = reconstruct_path(parent, current, goal)
         
         # Make agent traverse path
         for next_cell in path[1:]:
@@ -178,10 +180,12 @@ def repeated_backward_astar(grid, start, goal, tie_breaker=None):
         expansions, expanded_cells = compute_path(grid, known_blocked, open_list, g_array, h_array, search, parent, counter, goal, current, tie_breaker)
         total_expansions += expansions
         
-        if g_array[current] == np.inf: # If unreachable goal
+        # If unreachable goal
+        if g_array[current] == np.inf:
             return None, total_expansions
         
-        path = reconstruct_path(parent, goal, current) # If goal found, reconstruct path
+        # If goal found, reconstruct path
+        path = reconstruct_path(parent, goal, current)
         path.reverse() # Reverse the reconstructed path
         
         # Make agent traverse path
@@ -243,10 +247,12 @@ def adaptive_astar(grid, start, goal, tie_breaker=None):
         # Update h-values using new information
         update_h(h_array, g_array, expanded_cells, goal)
                 
-        if g_array[goal] == np.inf: # If unreachable goal
+        # If unreachable goal
+        if g_array[goal] == np.inf:
             return None, total_expansions
         
-        path = reconstruct_path(parent, current, goal) # If goal found, reconstruct path
+        # If goal found, reconstruct path
+        path = reconstruct_path(parent, current, goal)
         
         # Make agent traverse path
         for next_cell in path[1:]:
