@@ -96,6 +96,11 @@ def visualize_steps(grid, start=None, goal=None, steps=None):
                 if (r, c) != start and (r, c) != goal:
                     pygame.draw.rect(screen, (0, 0, 255), (c*CELL_SIZE, r*CELL_SIZE, CELL_SIZE, CELL_SIZE))
                     
+            # Draw projected path
+            for (r, c) in step["projected_path"]:
+                if (r, c) != start and (r, c) != goal and (r, c) != step["agent"]:
+                    pygame.draw.rect(screen, (255, 165, 0), (c*CELL_SIZE, r*CELL_SIZE, CELL_SIZE, CELL_SIZE))
+                    
             # Draw start and goal
             if start:
                 pygame.draw.rect(screen, (0, 200, 0), (start[1]*CELL_SIZE, start[0]*CELL_SIZE, CELL_SIZE, CELL_SIZE))
