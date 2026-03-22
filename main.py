@@ -16,19 +16,23 @@ if __name__ == "__main__":
         print("3. Forward A* large-g vs small-g")
         print("4. Forward vs Backward")
         print("5. Forward vs Adaptive")
-        print("6. Run full experiments")
+        print("6. Run experimental analysis")
         print("q. Quit")
         
         choice = input("\nChoose: ").strip()
         
         if choice == "q":
             break
-        elif choice == "0":
-            maze.save_grids()
-        elif choice == "1":
+        elif choice == "0": # Generate mazes
+            qty_mazes = input("Number of mazes (Default 30): ").strip()
+            maze_dir = input("Target directory (Default '/grids'): ")
+            qty_mazes = int(qty_mazes) if qty_mazes else 30
+            maze_dir = maze_dir if maze_dir else "grids"
+            maze.save_grids(qty_mazes, maze_dir)
+        elif choice == "1": # View maze
             grid, start, goal = demos.get_grid()
             visualizer.visualize_grid(grid, start=start, goal=goal)
-        elif choice == "2":
+        elif choice == "2": # Demo algorithm
             print("1. Forward A*")
             print("2. Forward A* (large-g)")
             print("3. Forward A* (small-g)")
@@ -68,18 +72,18 @@ if __name__ == "__main__":
             elif algo_choice == "9":
                 grid, start, goal = demos.get_grid()
                 demos.run_demo("Adaptive A* (small-g)", astar.adaptive_small_g, grid, start, goal)
-        elif choice == "3":
+        elif choice == "3": # Forward A* large-g vs small-g
             grid, start, goal = demos.get_grid()
             demos.run_demo("Forward Large-g", astar.forward_large_g, grid, start, goal)
             demos.run_demo("Forward Small-g", astar.forward_small_g, grid, start, goal)
-        elif choice == "4":
+        elif choice == "4": # Forward vs Backward
             grid, start, goal = demos.get_grid()
             demos.run_demo("Forward Large-g", astar.forward_large_g, grid, start, goal)
             demos.run_demo("Backward Large-g", astar.backward_large_g, grid, start, goal)
-        elif choice == "5":
+        elif choice == "5": # Forward vs Adaptive
             grid, start, goal = demos.get_grid()
             demos.run_demo("Forward Large-g", astar.forward_large_g, grid, start, goal)
             demos.run_demo("Adaptive Large-g", astar.adaptive_large_g, grid, start, goal)
-        elif choice == "6":
+        elif choice == "6": # Run experimental analysis
             results = demos.run_experiments()
             demos.print_summary(results)

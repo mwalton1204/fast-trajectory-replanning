@@ -4,9 +4,12 @@ import visualizer
 import numpy as np
 
 def get_grid():
-    grid_no = input("Which grid? (1-30, default=1): ").strip()
+    grid_dir = input("Grid directory (Default = '/grids'):")
+    grid_no = input("Which grid? (default = 1): ").strip()
     grid_no = int(grid_no)-1 if grid_no and int(grid_no) > 0 else 0
-    return maze.load_grid(grid_no)
+    if not grid_dir:
+        grid_dir = "grids"
+    return maze.load_grid(grid_no, grid_dir)
 
 def run_demo(name, func, grid, start, goal):
     print(f"\nRunning {name}...")
