@@ -87,6 +87,7 @@ def repeated_forward_astar(grid, start, goal, tie_breaker=None):
     steps = []
     total_expansions = 0
     counter = 0
+    moves = 0
     current = start
     visited = [start] # Full trajectory of the search
     
@@ -94,7 +95,7 @@ def repeated_forward_astar(grid, start, goal, tie_breaker=None):
     observe_neighbors(grid, known_blocked, current, observed) # Observe neighbors from start
     
     # Store step data for initial position
-    steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:], "observed": observed.copy(), "projected_path": [], "replans": counter, "expansions": total_expansions})
+    steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:], "observed": observed.copy(), "projected_path": [], "replans": counter, "expansions": total_expansions, "moves": moves})
     
     while current != goal:
         counter += 1
@@ -123,7 +124,7 @@ def repeated_forward_astar(grid, start, goal, tie_breaker=None):
         # If goal found, reconstruct path
         path = reconstruct_path(parent, current, goal)
         
-        steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:], "observed": observed.copy(), "projected_path": path[:], "replans": counter, "expansions": total_expansions})
+        steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:], "observed": observed.copy(), "projected_path": path[:], "replans": counter, "expansions": total_expansions, "moves": moves})
 
         
         # Make agent traverse path
@@ -132,6 +133,7 @@ def repeated_forward_astar(grid, start, goal, tie_breaker=None):
                 break
             current = next_cell
             visited.append(current)
+            moves += 1
             observe_neighbors(grid, known_blocked, current, observed)
             remaining = path[i:]
             valid_path = []
@@ -139,7 +141,7 @@ def repeated_forward_astar(grid, start, goal, tie_breaker=None):
                 if known_blocked[cell]:
                     break
                 valid_path.append(cell)
-            steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:], "observed": observed.copy(), "projected_path": valid_path, "replans": counter, "expansions": total_expansions})
+            steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:], "observed": observed.copy(), "projected_path": valid_path, "replans": counter, "expansions": total_expansions, "moves": moves})
             if current == goal:
                 return steps, total_expansions
             
@@ -159,6 +161,7 @@ def repeated_backward_astar(grid, start, goal, tie_breaker=None):
     steps = []
     total_expansions = 0
     counter = 0
+    moves = 0
     current = start
     visited = [start] # Full trajectory of the search
     
@@ -166,7 +169,7 @@ def repeated_backward_astar(grid, start, goal, tie_breaker=None):
     observe_neighbors(grid, known_blocked, current, observed) # Observe neighbors from start
     
     # Store step data for initial position
-    steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:], "observed": observed.copy(), "projected_path": [], "replans": counter, "expansions": total_expansions})
+    steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:], "observed": observed.copy(), "projected_path": [], "replans": counter, "expansions": total_expansions, "moves": moves})
 
     while current != goal:
         counter += 1
@@ -197,7 +200,7 @@ def repeated_backward_astar(grid, start, goal, tie_breaker=None):
         path = reconstruct_path(parent, goal, current)
         path.reverse() # Reverse the reconstructed path
         
-        steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:], "observed": observed.copy(), "projected_path": path[:], "replans": counter, "expansions": total_expansions})
+        steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:], "observed": observed.copy(), "projected_path": path[:], "replans": counter, "expansions": total_expansions, "moves": moves})
 
         
         # Make agent traverse path
@@ -206,6 +209,7 @@ def repeated_backward_astar(grid, start, goal, tie_breaker=None):
                 break
             current = next_cell
             visited.append(current)
+            moves += 1
             observe_neighbors(grid, known_blocked, current, observed)
             remaining = path[i:]
             valid_path = []
@@ -213,7 +217,7 @@ def repeated_backward_astar(grid, start, goal, tie_breaker=None):
                 if known_blocked[cell]:
                     break
                 valid_path.append(cell)
-            steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:], "observed": observed.copy(), "projected_path": valid_path, "replans": counter, "expansions": total_expansions})
+            steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:], "observed": observed.copy(), "projected_path": valid_path, "replans": counter, "expansions": total_expansions, "moves": moves})
             if current == goal:
                 return steps, total_expansions
             
@@ -233,6 +237,7 @@ def adaptive_astar(grid, start, goal, tie_breaker=None):
     steps = []
     total_expansions = 0
     counter = 0
+    moves = 0
     current = start
     visited = [start] # Full trajectory of the search
     
@@ -240,7 +245,7 @@ def adaptive_astar(grid, start, goal, tie_breaker=None):
     observe_neighbors(grid, known_blocked, current, observed) # Observe neighbors from start
     
     # Store step data for initial position
-    steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:], "observed": observed.copy(), "projected_path": [], "replans": counter, "expansions": total_expansions})
+    steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:], "observed": observed.copy(), "projected_path": [], "replans": counter, "expansions": total_expansions, "moves": moves})
     
     while current != goal:
         counter += 1
@@ -272,7 +277,7 @@ def adaptive_astar(grid, start, goal, tie_breaker=None):
         # If goal found, reconstruct path
         path = reconstruct_path(parent, current, goal)
         
-        steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:], "observed": observed.copy(), "projected_path": path[:], "replans": counter, "expansions": total_expansions})
+        steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:], "observed": observed.copy(), "projected_path": path[:], "replans": counter, "expansions": total_expansions, "moves": moves})
 
         # Make agent traverse path
         for i, next_cell in enumerate(path[1:], 1):
@@ -280,6 +285,7 @@ def adaptive_astar(grid, start, goal, tie_breaker=None):
                 break
             current = next_cell
             visited.append(current)
+            moves += 1
             observe_neighbors(grid, known_blocked, current, observed)
             remaining = path[i:]
             valid_path = []
@@ -287,7 +293,7 @@ def adaptive_astar(grid, start, goal, tie_breaker=None):
                 if known_blocked[cell]:
                     break
                 valid_path.append(cell)
-            steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:], "observed": observed.copy(), "projected_path": valid_path, "replans": counter, "expansions": total_expansions})
+            steps.append({"agent": current, "known_blocked": known_blocked.copy(), "visited": visited[:], "observed": observed.copy(), "projected_path": valid_path, "replans": counter, "expansions": total_expansions, "moves": moves})
             if current == goal:
                 return steps, total_expansions
             

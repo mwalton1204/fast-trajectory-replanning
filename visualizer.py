@@ -120,11 +120,11 @@ def visualize_steps(grid, start=None, goal=None, steps=None):
             
             # Draw info text
             info_lines = [
-                f"Step:       {current_step}/{len(steps)-1}",
-                f"Start:      {start}",
-                f"Goal:       {goal}",
-                f"Agent:      {step['agent']}",
-                f"Replans:    {step['replans']}",
+                f"Move: {step['moves']}",
+                f"Start: {start}",
+                f"Goal: {goal}",
+                f"Agent: {step['agent']}",
+                f"Replans: {step['replans']}",
                 f"Expansions: {step['expansions']}",
             ]
             for i, line in enumerate(info_lines):
