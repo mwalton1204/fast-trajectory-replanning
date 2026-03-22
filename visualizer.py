@@ -99,44 +99,43 @@ def visualize_steps(grid, start=None, goal=None, steps=None):
                     color = (255, 255, 255)
                 pygame.draw.rect(screen, color, (c*CELL_SIZE, r*CELL_SIZE, CELL_SIZE, CELL_SIZE))
                 
-            # Draw current path
-            for (r, c) in step["visited"]:
-                if (r, c) != start and (r, c) != goal:
-                    pygame.draw.rect(screen, (0, 0, 255), (c*CELL_SIZE, r*CELL_SIZE, CELL_SIZE, CELL_SIZE))
+        # Draw current path
+        for (r, c) in step["visited"]:
+            if (r, c) != start and (r, c) != goal:
+                pygame.draw.rect(screen, (0, 0, 255), (c*CELL_SIZE, r*CELL_SIZE, CELL_SIZE, CELL_SIZE))
+                
+        # Draw projected path
+        for (r, c) in step["projected_path"]:
+            if (r, c) != start and (r, c) != goal and (r, c) != step["agent"]:
+                pygame.draw.rect(screen, (255, 165, 0), (c*CELL_SIZE, r*CELL_SIZE, CELL_SIZE, CELL_SIZE))
+                
+        # Draw start and goal
+        if start:
+            pygame.draw.rect(screen, (0, 200, 0), (start[1]*CELL_SIZE, start[0]*CELL_SIZE, CELL_SIZE, CELL_SIZE))
+        if goal:
+            pygame.draw.rect(screen, (200, 0, 0), (goal[1]*CELL_SIZE, goal[0]*CELL_SIZE, CELL_SIZE, CELL_SIZE))
                     
-            # Draw projected path
-            for (r, c) in step["projected_path"]:
-                if (r, c) != start and (r, c) != goal and (r, c) != step["agent"]:
-                    pygame.draw.rect(screen, (255, 165, 0), (c*CELL_SIZE, r*CELL_SIZE, CELL_SIZE, CELL_SIZE))
-                    
-            # Draw start and goal
-            if start:
-                pygame.draw.rect(screen, (0, 200, 0), (start[1]*CELL_SIZE, start[0]*CELL_SIZE, CELL_SIZE, CELL_SIZE))
-            if goal:
-                pygame.draw.rect(screen, (200, 0, 0), (goal[1]*CELL_SIZE, goal[0]*CELL_SIZE, CELL_SIZE, CELL_SIZE))
-                        
-            # Draw agent
-            agent = step["agent"]
-            pygame.draw.rect(screen, (255, 255, 0), (agent[1]*CELL_SIZE, agent[0]*CELL_SIZE, CELL_SIZE, CELL_SIZE))
+        # Draw agent
+        agent = step["agent"]
+        pygame.draw.rect(screen, (255, 255, 0), (agent[1]*CELL_SIZE, agent[0]*CELL_SIZE, CELL_SIZE, CELL_SIZE))
+    
+        # Draw info panel background
+        panel = pygame.Surface((220, 120), pygame.SRCALPHA)
+        panel.fill((0, 0, 0, 120))
+        screen.blit(panel, (5, 5))
         
-            # Draw info panel background
-            panel = pygame.Surface((220, 120))
-            panel.set_alpha(120)
-            panel.fill((0, 0, 0))
-            screen.blit(panel, (5, 5))
-            
-            # Draw info text
-            info_lines = [
-                f"Move: {step['moves']}",
-                f"Start: {start}",
-                f"Goal: {goal}",
-                f"Agent: {step['agent']}",
-                f"Replans: {step['replans']}",
-                f"Expansions: {step['expansions']}",
-            ]
-            for i, line in enumerate(info_lines):
-                text = font.render(line, True, (255, 255, 255))
-                screen.blit(text, (10, 10 + i * 18))
+        # Draw info text
+        info_lines = [
+            f"Move: {step['moves']}",
+            f"Start: {start}",
+            f"Goal: {goal}",
+            f"Agent: {step['agent']}",
+            f"Replans: {step['replans']}",
+            f"Expansions: {step['expansions']}",
+        ]
+        for i, line in enumerate(info_lines):
+            text = font.render(line, True, (255, 255, 255))
+            screen.blit(text, (10, 10 + i * 18))
         
         pygame.display.flip()
         clock.tick(60)
