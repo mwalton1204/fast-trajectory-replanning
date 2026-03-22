@@ -53,6 +53,8 @@ def visualize_steps(grid, start=None, goal=None, steps=None):
     stepping = False
     show_maze = False
     
+    play_speed = 5
+    tick_counter = 0
     clock = pygame.time.Clock()
     
     while True:
@@ -73,11 +75,16 @@ def visualize_steps(grid, start=None, goal=None, steps=None):
                     show_maze = not show_maze
         
         if stepping:
-            current_step = min(current_step + 1, len(steps) - 1)
-            if current_step == len(steps) - 1:
-                stepping = False
+            tick_counter += 1
+            if tick_counter >= 60 // play_speed:
+                tick_counter = 0
+                current_step = min(current_step + 1, len(steps) - 1)
+                if current_step == len(steps) - 1:
+                    stepping = False
                 
         step = steps[current_step]
+        
+        screen.fill((128, 128, 128))  # clear screen with grey background each frame
         
         # Draw each cell
         for r in range(grid.rows):
@@ -114,7 +121,7 @@ def visualize_steps(grid, start=None, goal=None, steps=None):
         
             # Draw info panel background
             panel = pygame.Surface((220, 120))
-            panel.set_alpha(180)
+            panel.set_alpha(120)
             panel.fill((0, 0, 0))
             screen.blit(panel, (5, 5))
             
@@ -131,5 +138,5 @@ def visualize_steps(grid, start=None, goal=None, steps=None):
                 text = font.render(line, True, (255, 255, 255))
                 screen.blit(text, (10, 10 + i * 18))
         
-            pygame.display.flip()
-            clock.tick(400)
+        pygame.display.flip()
+        clock.tick(60)
