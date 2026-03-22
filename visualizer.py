@@ -14,9 +14,7 @@ def visualize_grid(grid, start=None, goal=None, path=None):
         for c in range(grid.cols):
             color = (0, 0, 0) if grid.blocked[r, c] else (255, 255, 255)
             pygame.draw.rect(screen, color, (c*CELL_SIZE, r*CELL_SIZE, CELL_SIZE, CELL_SIZE))
-            # Draw grid border
-            pygame.draw.rect(screen, (200, 200, 200), (c*CELL_SIZE, r*CELL_SIZE, CELL_SIZE, CELL_SIZE), 1)
-
+            
     # Draw start and goal
     if start:
         pygame.draw.rect(screen, (0, 200, 0), (start[1]*CELL_SIZE, start[0]*CELL_SIZE, CELL_SIZE, CELL_SIZE))
